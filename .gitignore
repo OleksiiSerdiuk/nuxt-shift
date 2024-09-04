@@ -1,0 +1,28 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+.idea/
+
+# Logs
+*.log
+*.nuxt
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files
+/dist
+/build
+
+# Temporary files
+*.tmp
+*.temp
+
+# Other common files that should be ignored
+.DS_Store        # macOS desktop services store file
+thumbs.db        # Windows image file cache
+*.swp            # Vim swap file
