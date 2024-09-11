@@ -35,19 +35,14 @@ const { events, addEvent} = useEventStore();
 const isSidebarVisible = ref(false);
 const price = ref(0);
 
-function toggleSidebar() {
-  isSidebarVisible.value = !isSidebarVisible.value;
-}
-
-function handleCloseSidebar() {
-  isSidebarVisible.value = false;
-}
+const toggleSidebar = () => isSidebarVisible.value = !isSidebarVisible.value;
+const handleCloseSidebar = () => isSidebarVisible.value = false;
 
 const filteredEvents = computed(() => {
   return events.reduce((acc, event) => {
     const filteredData = event.data.filter((date) => date.price <= price.value);
 
-    if (filteredData.length > 0) {
+    if (filteredData.length) {
       acc.push({
         ...event,
         data: filteredData

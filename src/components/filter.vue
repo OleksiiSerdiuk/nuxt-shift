@@ -19,7 +19,7 @@ const priceSlider = ref(null);
 const model = defineModel();
 const emit = defineEmits(['update']);
 
-function updateSliderBackground() {
+const updateSliderBackground = () => {
   if (priceSlider.value && maxPrice.value) {
     const percentage = (model.value / maxPrice.value) * 100;
     priceSlider.value.style.background = `linear-gradient(to right, rgb(89 151 240) ${percentage}%, #ccc ${percentage}%, #ccc 100%)`;
@@ -39,9 +39,7 @@ watchEffect(() => {
   updateSliderBackground();
 });
 
-function emitPrice() {
-  emit('update:model', model);
-}
+const emitPrice = () => emit('update:model', model);
 
 onMounted(() => updateSliderBackground);
 watch([model, maxPrice], updateSliderBackground);

@@ -15,9 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits(['click']);
 
-function handleClick(event) {
-  emit('click', event);
-}
+const handleClick = (event) => emit('click', event);
 
 const buttonClasses = computed(() => {
   let classes = ['btn', 'max-h-[50px]', 'flex', 'items-center', 'justify-center'];
