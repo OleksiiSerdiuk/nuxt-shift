@@ -3,9 +3,8 @@
     <div
       ref="sidebarRef"
       v-show="isVisible"
-      class="absolute top-0 right-0 bg-white w-[457px] h-full shadow-[0px_6px_40px_rgba(0,0,0,0.25)] p-5">
+      class="absolute top-0 right-0 bg-white w-[457px] h-full shadow-[0px_6px_40px_rgba(0,0,0,0.25)] p-5 overflow-y-scroll">
       <h2 class="text-2xl mb-4">Create</h2>
-
       <form @submit.prevent="handleSubmit">
         <v-input
           label="Title:"
@@ -13,6 +12,7 @@
           type="input"
           id="title"
           placeholder="Shift Title"
+          :error="validateShift.title"
           required
         />
         <v-input
@@ -21,6 +21,7 @@
           type="textarea"
           id="description"
           placeholder="Describe the duties"
+          :error="validateShift.description"
           required
         />
 
@@ -35,6 +36,7 @@
             type="date"
             :id="`date-${index}`"
             :white-label="true"
+            :error="validateShift.dates[index]?.date"
             required
           />
           <v-input
@@ -44,6 +46,7 @@
             type="time"
             :id="`starttime-${index}`"
             :white-label="true"
+            :error="validateShift.dates[index]?.starttime"
             required
           />
           <v-input
@@ -53,6 +56,7 @@
             type="time"
             :id="`endtime-${index}`"
             :white-label="true"
+            :error="validateShift.dates[index]?.endtime"
             required
           />
           <v-input
@@ -61,6 +65,7 @@
             placeholder="Type"
             :id="`type-${index}`"
             :white-label="true"
+            :error="validateShift.dates[index]?.type"
             required
           />
           <v-input
@@ -70,6 +75,7 @@
             type="number"
             :id="`price-${index}`"
             :white-label="true"
+            :error="validateShift.dates[index]?.price"
             required
           />
 
@@ -90,7 +96,7 @@
         </div>
 
         <div class="flex justify-between gap-5">
-          <v-button secondary class="flex-1" type="button" @click="closeSidebar">Cancel</v-button>
+          <v-button secondary class="flex-1" type="button" @click="$emit('close')">Cancel</v-button>
           <v-button primary class="flex-1" type="submit" @click.prevent="handleSubmit">Save</v-button>
         </div>
       </form>
@@ -102,6 +108,7 @@
 import { defineProps } from 'vue'
 import VButton from "~/src/components/elements/v-button.vue";
 import VInput from "~/src/components/elements/v-input.vue";
+import {validateForm} from "~/src/validation/validation.js";
 
 const props = defineProps({
   isVisible: Boolean
@@ -109,6 +116,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save'])
 const sidebarRef = ref(null);
+const formValid = ref(false);
+const formSubmitted = ref(false);
 const defaultShiftData = () => ({
   title: '',
   description: '',
@@ -121,16 +130,17 @@ const defaultShiftData = () => ({
   }]
 });
 
+const validateShift = computed(() => {
+  const { errors, isFormValid } = validateForm(shift, formSubmitted.value);
+  formValid.value = isFormValid;
+  return errors;
+});
+
 const shift = reactive(defaultShiftData())
-
-
-const closeSidebar = () => {
-  emit('close');
-}
 
 const onClickOutside = (event) => {
   if (sidebarRef.value && !sidebarRef.value.contains(event.target)) {
-    closeSidebar();
+    emit('close');
   }
 }
 
@@ -148,10 +158,17 @@ const removeDate = (index) => {
   shift.data.splice(index, 1);
 };
 
-const handleSubmit = () => {
-  emit('save', shift);
-  Object.assign(shift, defaultShiftData());
-  closeSidebar();
+const handleSubmit = async () => {
+  formSubmitted.value = true;
+
+  await nextTick();
+
+  if (formValid.value) {
+    emit('save', shift);
+    emit('close');
+    Object.assign(shift, defaultShiftData());
+    formSubmitted.value = false;
+  }
 }
 
 onMounted(() => {

@@ -59,7 +59,7 @@ export const useEventStore = defineStore('event', {
                 description: appointment.description,
                 data: [ ...appointment.data ]
             };
-            this.events.push(formattedShift);
+            this.events.unshift(formattedShift);
         },
         removeEvent(id) {
             this.events = this.events.filter(appointment => appointment.id !== id);

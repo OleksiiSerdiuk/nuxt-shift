@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col mb-3">
+  <div class="flex flex-col mb-2">
     <label
       class="text-sm font-normal"
       :class="whiteLabel ? 'text-white' : 'text-black'"
@@ -13,10 +13,11 @@
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      :class="{'border-red-500': error}"
       @input="updateValue"
       class="border border-black px-[10px] py-[5px] rounded mt-2"
     />
-    <span v-show="error" class="error-message">{{ error }}</span>
+    <span v-show="error" class="error-message mt-1">{{ error }}</span>
   </div>
 </template>
 

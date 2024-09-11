@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="my-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div>
       <h1 class="text-3xl md:text-4xl font-bold underline">Filter</h1>
       <Filter :events="events" v-model="price" />

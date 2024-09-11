@@ -32,19 +32,26 @@ watchEffect(() => {
     return Math.max(acc, maxEventPrice);
   }, 0);
 
-  if (model.value === 0) {
+  if (model.value === 0 || model.value > maxPrice.value) {
     model.value = maxPrice.value;
   }
+
+  updateSliderBackground();
 });
 
 function emitPrice() {
   emit('update:model', model);
 }
 
-onMounted(updateSliderBackground);
-
-watch(model, updateSliderBackground);
-watch(maxPrice, updateSliderBackground);
+onMounted(() => updateSliderBackground);
+watch([model, maxPrice], updateSliderBackground);
+watch(props.events, () => {
+  let currentMaxPrice = 0;
+  props.events.filter((event) => {
+    if (event.price > currentMaxPrice) currentMaxPrice = event.price;
+  })
+  model.value = currentMaxPrice;
+})
 </script>
 
 <style lang="postcss" scoped>
