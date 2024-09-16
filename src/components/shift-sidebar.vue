@@ -4,7 +4,7 @@
       ref="sidebarRef"
       v-show="isVisible"
       class="absolute top-0 right-0 bg-white w-[457px] h-full shadow-[0px_6px_40px_rgba(0,0,0,0.25)] p-5 overflow-y-scroll">
-      <h2 class="text-2xl mb-4">Create</h2>
+      <h2 class="text-2xl mb-4">{{currentShift.id ? 'Edit' : 'Create' }}</h2>
       <form @submit.prevent="handleSubmit">
         <v-input
           label="Title:"
@@ -96,8 +96,9 @@
         </div>
 
         <div class="flex justify-between gap-5">
+          <v-button v-if="currentShift.id" secondary class="flex-1" type="button" @click.prevent="handleEdit">Edit</v-button>
+          <v-button v-else primary class="flex-1" type="submit" @click.prevent="handleSubmit">Save</v-button>
           <v-button secondary class="flex-1" type="button" @click="$emit('close')">Cancel</v-button>
-          <v-button primary class="flex-1" type="submit" @click.prevent="handleSubmit">Save</v-button>
         </div>
       </form>
     </div>
@@ -111,10 +112,17 @@ import VInput from "~/src/components/elements/v-input.vue";
 import {validateForm} from "~/src/validation/validation.js";
 
 const props = defineProps({
-  isVisible: Boolean
+  isVisible: {
+    type: Boolean,
+    default: false,
+  },
+  currentShift: {
+    type: Object,
+    default: {},
+  },
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save', 'edit'])
 const sidebarRef = ref(null);
 const formValid = ref(false);
 const formSubmitted = ref(false);
@@ -170,6 +178,36 @@ const handleSubmit = async () => {
     formSubmitted.value = false;
   }
 }
+
+const handleEdit = async () => {
+  formSubmitted.value = true;
+
+  await nextTick();
+
+  if (formValid.value) {
+    emit('edit', shift);
+    emit('close');
+    Object.assign(shift, defaultShiftData());
+    formSubmitted.value = false;
+  }
+}
+
+watch(() => props.currentShift, (newValue, oldValue) => {
+  if (newValue.id) {
+    shift.id = newValue.id || '';
+    shift.title = newValue.title || '';
+    shift.description = newValue.description || '';
+    shift.data = newValue.data.map(entry => ({
+      date: entry.date || '',
+      starttime: entry.starttime || '',
+      endtime: entry.endtime || '',
+      type: entry.type || '',
+      price: entry.price || null,
+    }));
+  } else {
+    Object.assign(shift, defaultShiftData());
+  }
+});
 
 onMounted(() => {
   document.addEventListener('mousedown', onClickOutside);

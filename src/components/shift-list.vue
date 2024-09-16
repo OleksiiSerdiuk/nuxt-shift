@@ -14,13 +14,15 @@
         Add Shift
       </v-button>
     </div>
-    <EventCards v-if="filteredEvents.length" :events="filteredEvents" />
+    <EventCards v-if="filteredEvents.length" :events="filteredEvents" @edit="toggleSidebar" />
   </div>
 
   <ShiftSidebar
+    :currentShift="currentShift"
     :isVisible="isSidebarVisible"
     @close="handleCloseSidebar"
     @save="handleSave"
+    @edit="handleEdit"
   />
 </template>
 
@@ -31,11 +33,20 @@ import {useEventStore} from "~/src/store/events.js";
 import ShiftSidebar from "~/src/components/shift-sidebar.vue";
 import EventCards from "~/src/components/event-cards.vue";
 
-const { events, addEvent} = useEventStore();
+const { events, addEvent, editEvent} = useEventStore();
 const isSidebarVisible = ref(false);
 const price = ref(0);
+const currentShift = ref({})
 
-const toggleSidebar = () => isSidebarVisible.value = !isSidebarVisible.value;
+const toggleSidebar = (id) => {
+  if (id) {
+    currentShift.value = filteredEvents.value.find(i => i.id === id);
+  } else {
+    currentShift.value = {}
+  }
+  isSidebarVisible.value = !isSidebarVisible.value
+
+};
 const handleCloseSidebar = () => isSidebarVisible.value = false;
 
 const filteredEvents = computed(() => {
@@ -55,6 +66,10 @@ const filteredEvents = computed(() => {
 
 const handleSave = (newShiftData) => {
   addEvent(newShiftData);
+};
+
+const handleEdit = (newShiftData) => {
+  editEvent(newShiftData);
 };
 </script>
 

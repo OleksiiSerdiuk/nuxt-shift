@@ -5,7 +5,13 @@
     class="bg-white shadow-3xl rounded-xl px-6 py-4"
     :class="{'mt-10': index === 0, 'mt-6': index !== 0}"
   >
-    <h3 class="text-xl md:text-2xl">{{ event.title }}</h3>
+    <div class="flex items-center justify-between">
+      <h3 class="text-xl md:text-2xl">{{ event.title }}</h3>
+      <v-button
+        class="btn text-md font-bold"
+        @click="$emit('edit', event.id)"
+      >Edit</v-button>
+    </div>
     <p class="mt-2 text-lg font-light">{{ event.description }}</p>
     <h3 class="text-xl md:text-2xl mt-4 mb-2">Dates</h3>
     <ul
@@ -24,10 +30,14 @@
 </template>
 
 <script setup>
+import VButton from "~/src/components/elements/v-button.vue";
+
 const props = defineProps({
   events: {
     type: Array,
     default: () => []
   }
 })
+
+const emit = defineEmits(['edit'])
 </script>
